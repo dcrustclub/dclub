@@ -113,7 +113,7 @@
 
               <form method="post" action="register.php">
                 <div class="form-group form-inline">
-                  <label for="name" class="col-12 col-sm-3">Name</label>
+                  <label for="name" class="col-12 col-sm-3">Username</label>
                   <input type="text" id="name" name="name" class="form-control col-10 col-sm-8 offset-1" required>
                 </div>
                 <div class="form-group form-inline">

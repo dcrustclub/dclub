@@ -90,6 +90,30 @@
 
 	<div class="container">
 
+		<!-- Row for message to user -->
+		<div class="row">
+			<div class="col-12">
+				<?php  
+			        if(isset($_SESSION['message'])){
+			          echo "<div class='alert alert-success mt-4'>";
+			          echo $_SESSION['message'];
+			          echo "</div>";
+			          unset($_SESSION['message']);
+			        }
+			        if(isset($_SESSION['error_dashboard'])){
+			          echo "<div class='alert alert-danger mt-4'>";
+			          echo $_SESSION['error_dashboard'];
+			          echo "</div>";
+			          unset($_SESSION['error_dashboard']);
+			        }
+			    ?>
+      
+
+
+			</div>
+
+		</div>
+
 		<div class="row">
 			<div class="col-12">
 				
