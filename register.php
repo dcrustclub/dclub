@@ -41,7 +41,7 @@
 		$stmt->execute(array(
 			':name'=>$_POST['name'],
 			':email'=>$_POST['emailRegister'],
-			':pass'=>$_POST['passRegister'],
+			':pass'=>password_hash($_POST['passRegister'], PASSWORD_BCRYPT),
 			':dt' => $date." ".$time
 		));
 		
