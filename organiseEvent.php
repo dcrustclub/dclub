@@ -1,4 +1,7 @@
 <?php  
+  //to do's
+  // Add coursera like checkbox to the page using jquery so that, it will be enabled only when the checkbox is selected
+
 	require_once "pdo.php";
 	session_start();
 	//Checking that user has visited after logging in
@@ -85,7 +88,83 @@
 	</nav>
 
   <!-- Now, dealing with the body -->
-    
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mt-4">
+        <h4>Organise Events</h4>
+        <hr/>
+        <center>
+          <h6 class='mb-4'>Please fill the form below:</h6>
+        </center>
+        <form method = "post">
+          <div class="row">
+            <div class="form-group col-12 col-md-5 mt-2">
+              <label class="h6" for="eventname">Event Name</label>
+              <input class="form-control" type="text" id="eventname" name="eventname" >
+            </div>
+          
+            <div class="form-group col-md-5 offset-md-1 mt-2">
+              <label class="h6" for="org">Organising Committee</label>
+              <select class="custom-select" name="org" id="org">
+                <option selected>--Select organising Group--</option>
+                <option value="lisoc">Lisoc</option>
+                <option value="ska">SKA</option>
+                <option value="stepstormzz">StepStormzz</option>
+                <option value="thinkbots">ThinkBots</option>
+                <option value="code-it">Code-it</option>
+              </select>
+            </div>
+            
+            <div class="form-group col-12 col-md-5 mt-2">
+              <label class="h6" for="venue">Venue</label>
+              <input class="form-control" type="text" id="venue" name="venue" placeholder="Venue here...">
+              <small class="form-text text-muted">Enter value as: Room no. 216, MV Block </small>
+            </div>
+
+            <div class="form-group col-5 col-md-3 mt-2 offset-md-1">
+              <label class="h6" for="edate">Date</label>
+              <input class="form-control" type="date" id="edate" name="edate" >
+              <small class="form-text text-muted">Enter value as: YYYY-MM-DD</small>
+            </div>
+
+            <div class="form-group col-5 col-md-2 mt-2">
+              <label class="h6" for="etime">Time</label>
+              <input class="form-control" type="time" id="etime" name="etime" >
+              <small class="form-text text-muted">Enter value as: HH:MM SS</small>
+            </div>
+          
+            <div class="form-group col-12  col-sm-7 mt-2">
+              <label for="des" class="h6">Description</label>
+              <textarea class="form-control" rows=5 id="des" name="des"></textarea>            
+            </div>
+
+            <div class="form-check col-12 col-sm-10 m-2">
+              <input type="checkbox" value="agree" id="agree" class="form-check-input">
+              <label for="agree">I agree to <a href="#">event posting terms and conditions</a> and understand posting fraud events will result in blocking of my account</label>
+            </div>
+
+            <div class="form-group col-12 col-sm-3 mt-2">
+              <button type="submit" class="btn btn-success btn-block" disabled>Post Event</button>
+            </div>
+            <div class="form-group col-6 col-sm-3 mt-2">
+              <button type="submit" class="btn btn-outline-danger" disabled>Cancel</button>
+            </div>
+         
+          </div>
+
+        </form>
+      </div>
+
+      <!-- this should be shown as the msg on the dashboard when the user submits the event -->
+      <div class="col-12">
+        <div class="alert alert-success" role="alert">
+          We are proud of you, for your devotion to the community by posting events to make the community better
+        </div>
+      </div>
+    </div>
+
+
+  </div>  
 
 
 
