@@ -1,10 +1,5 @@
 <?php  
-	//To do's
-	//Add jquery code so that the report field will be updated automatically when the user reports
-	//Add jquery code so that user gets enrolled when they click enroll button
-
-
-	require_once "pdo.php";
+	require_once 'pdo.php';
 	session_start();
 	//Checking that user has visited after logging in
 	if(!isset($_SESSION['name'])){
@@ -29,13 +24,45 @@
 		header('Location:fullRegister.php');
 		return;	
 	}
+
+	if(isset($_GET['e_id'])){
+	
+		$sql_get_event_details = "Select * from events where event_id=:e_id";
+		$stmt_get_event_details = $pdo->prepare($sql_get_event_details);
+		$stmt_get_event_details->execute(array(
+			':e_id'=>$_GET['e_id']
+		));
+		$row_get_event_details = $stmt_get_event_details->fetch(PDO::FETCH_ASSOC);
+		//Now, getting the user details
+		$sql_get_organiser_details = 'SELECT * from register where register_id = :r_id';
+		$stmt_get_organiser_details = $pdo->prepare($sql_get_organiser_details);
+		$stmt_get_organiser_details->execute(array(
+			':r_id' => $row_get_event_details['user_register_id']
+		));
+		$row_get_organiser_details = $stmt_get_organiser_details->fetch(PDO::FETCH_ASSOC);
+
+		$sql_get_organiser_pno = "Select * from fullregister where register_id=:r_id";
+		$stmt_get_organiser_pno = $pdo->prepare($sql_get_organiser_pno);
+		$stmt_get_organiser_pno->execute(array(
+			':r_id'=>$row_get_event_details['user_register_id']
+		));
+		$row_get_organiser_pno = $stmt_get_organiser_pno->fetch(PDO::FETCH_ASSOC);
+		//Now, getting a date and time
+		$dt = new DateTime($row_get_event_details['v_date_time']);
+		$e_date = $dt->format('d-m-y');
+		$e_time = $dt->format('h:i:s');
+
+
+		
+	}
+	else{
+		$_SESSION['error_events'] = "Please click on the detail button of the event whose details you want to view";
+		header('Location: events.php');
+		return;
+	}
 	
 
-
-
-
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -93,81 +120,61 @@
 	<!-- Now, dealing with the body -->
 
 	<div class="container">
+
 		<div class="row">
-			<!-- for the messages to user -->
-			<div class="col-12">
-				<?php  
-			        if(isset($_SESSION['message_events'])){
-			          echo "<div class='alert alert-success mt-4'>";
-			          echo $_SESSION['message_events'];
-			          echo "</div>";
-			          unset($_SESSION['message_events']);
-			        }
-			        if(isset($_SESSION['error_events'])){
-			          echo "<div class='alert alert-danger mt-4'>";
-			          echo $_SESSION['error_events'];
-			          echo "</div>";
-			          unset($_SESSION['error_events']);
-			        }
-			    ?>
+			<!-- User requested details -->
+			<div class="col-12 col-md-8 mt-4">
+				<h4>Event Details <i class='fas fa-hand-point-down'></i></h4>
+				<hr>
+				<div class="card">
+					<div class="card-body">
+						<h6 class="display-4"><?php echo $row_get_event_details['name']; ?></h6>
+						<p class="lead"> 
+							<?php echo "Organised by ".$row_get_organiser_details['name']." of ".$row_get_event_details['organising_group']; ?> 
+						</p>
+						<p class="row">
+							<span class='col-2'>
+							Description: 
+							</span>
+							<span class=" col-10">
+							<?php echo $row_get_event_details['description']; ?>
+							</span>
+						</p>
+						<p class="row">
+							<span class="col-2">
+								Venue:
+							</span>
+							<span class="col-10">
+								Place: <span class="h6"><?php echo $row_get_event_details['v_place']; ?></span><br>
+								Date: <span class="h6"><?php echo $e_date; ?></span><br/>
+								Time: <span class="h6"><?php echo $e_time; ?></span>
+							</span>
+						</p>
+						<p class="row">
+							<span class="col-5 col-md-2">
+								Organiser Details:
+							</span>
+							<span class="col-7 col-md-7">
+								Name: <span class="h6"><?php echo $row_get_organiser_details['name']; ?></span><br/>
+								Phone no. : <span class="h6"><?php echo $row_get_organiser_pno['pno']; ?></span>
+							</span>
+						</p>
+						<p class="row">
+							<span class="col-3 col-md-2">
+								Your Actions: 	
+							</span>
+							<span class="col-7 col-md-9">
+								<a class='btn btn-primary ' href="#">Enroll</a>
+								<a class='btn btn-danger' href="#" data-toggle="tooltip" data-html="true" title="If you find the event absurd<br> And think that it's done for fun <strong>by some unwanted elements</strong>" data-placement="top">Report <i class="fas fa-question"></i></a>
+							</span>
+
+
+						</p>
+					</div>
+				</div>
 			</div>
-		</div>
-
-		<div class="row">
-          <div class="col-12 mt-4 col-md-7">
-            <h4>Events Available <i class="fas fa-hand-point-down"></i></h4>
-            <hr/>
-            <?php  
-            	//Getting the events details form events 
-            	$sql_get_event_detail = "SELECT * from events order by name";
-            	$stmt_get_event_detail = $pdo->prepare($sql_get_event_detail);
-            	$stmt_get_event_detail->execute();
-            	$row_get_event_detail = $stmt_get_event_detail->fetch(PDO::FETCH_ASSOC);
-            	if (!$row_get_event_detail){
-            		echo "<div class='lead mt-4' style='height: 50vh;'>Well, no events for now!! Check sometime later</div>";	
-            	}
-            	else{
-            		
-            		//Now, browse through the events available to us
-            		while(true){
-            			//Getting the organiser details	
-            			$sql_get_organiser_detail = "SELECT * from register where register_id=:r_id";
-	            		$stmt_get_organiser_detail= $pdo->prepare($sql_get_organiser_detail);
-	            		$stmt_get_organiser_detail->execute(array(
-	            			':r_id'=>$row_get_event_detail['user_register_id']
-	            		));
-	            		$row_get_organiser_detail = $stmt_get_organiser_detail->fetch(PDO::FETCH_ASSOC);
-
-            			echo "<div class='card mt-3'>";
-            			echo "<div class='card-body'>";
-            			echo "<h4 class='card-title'>".$row_get_event_detail['name'];
-            			
-            			echo "</h4>";
-            			echo "<div class='card-text'>";
-            			echo "<p class='row'>";
-            			echo "<span class='col-6'>";
-            			echo "Organised by ".$row_get_organiser_detail['name']." of ".$row_get_event_detail['organising_group'];
-            			echo "</span>";
-            			echo "<span class='col-6'>";
-            			echo "<a href='#' id='enrollBtn' class='btn btn-success ml-1'>Enroll</a> ";
-            			echo "<a href='eventDetails.php?e_id=".$row_get_event_detail['event_id'] ."'class='btn btn-outline-primary ml-1'>Details</a>";
-            			echo "<a class='btn btn-outline-danger ml-1' href='#' data-toggle='tooltip' data-html='true' title='If you find the event absurd<br/> And think that it is done for fun <strong>by some unwanted elements</strong>' data-placement='top'>Report <i class='fas fa-question'></i></a>";
-            			echo "</span>";
-            			echo "</div>";
-            			echo "</div>";
-            			echo "</div>";
-            			if($row_get_event_detail = $stmt_get_event_detail->fetch(PDO::FETCH_ASSOC)){}
-            			else{
-            				break;
-            			}
-            		}
-            	}
-
-            ?>
-
-
-          </div>
-          <div class="col-12 offset-md-1 col-md-4 mt-4">
+			<!-- Advertisement content -->
+			<div class="col-12 col-md-4 mt-4">
             <h5>Featured Events</h5>
             <hr>
             <div class="card">
@@ -184,13 +191,14 @@
               
             </div>
           </div>
-        </div>
 
+
+
+
+		</div>
 
 
 	</div>
-
-
 
 
 
@@ -244,9 +252,7 @@
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
             $('.dropdown-toggle').dropdown();
-            $('#enrollBtn').click(function(){
-            	console.log("Enroll Button Clicked");
-            });
+            
         });
     </script>
 

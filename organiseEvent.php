@@ -18,20 +18,40 @@
   $stmt_check_full_register->execute(array(
     ':id'=> $_SESSION['login_register_id']
   ));
-  
+   
   $row_check_full_register = $stmt_check_full_register->fetch(PDO::FETCH_ASSOC);
 
   if(!$row_check_full_register){
     $_SESSION['full_register_register_id'] = $_SESSION['login_register_id'];
     $_SESSION['full_register_error_message'] = "Please complete your registration first <i class='fas fa-hand-point-down'></i>";
     header('Location:fullRegister.php');
-    return; 
+    return;
   }
+
+  if(isset($_POST['eventDetails'])){
+    date_default_timezone_set('Asia/Kolkata');
+    $date = Date('Y-m-d');
+    $time = Date('H:i:s');
+    $sql_add_event = "Insert into events(name, organising_group, user_register_id, description, v_place, v_date_time, date_time, reports) values (:nm, :o_grp, :u_r_id, :des, :v_p, :v_d_t, :d_t, :rep)";
+    $stmt_add_event = $pdo->prepare($sql_add_event);
+    $stmt_add_event->execute(array(
+      ':nm'=>$_POST['eventname'],
+      ':o_grp'=>$_POST['org'],
+      ':u_r_id'=>$_SESSION['login_register_id'],
+      ':des'=>$_POST['des'],
+      ':v_p'=>$_POST['venue'],
+      ':d_t' => $date." ".$time,
+      ':v_d_t'=>$_POST['edate']." ".$_POST['etime'],
+      ':rep'=>0
+    ));    
+
+    $_SESSION['organiseSuccessMessage'] = "Congrats, your event is live now!!!";
+
+
+  }
+
+
   	
-
-
-
-
 ?>
 
 
@@ -50,6 +70,8 @@
     <!-- Custom style sheet -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/png" href="img/title_image.png">
+    <!-- Using Parsely's CSS -->
+    <link rel="stylesheet" href = "css/parsleys.css">
 
 
 </head>
@@ -72,7 +94,7 @@
 				  </button>
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 				    <a class="dropdown-item" href="dashboard.php"><i class="fas fa-home"></i> Dashboard</a>
-				    <a class="dropdown-item" href="events"><i class="fas fa-list-ul"></i> Events</a>
+				    <a class="dropdown-item" href="events.php"><i class="fas fa-list-ul"></i> Events</a>
 				    <a class="dropdown-item" href="settings"><i class="fas fa-cogs"></i> Settings</a>
 				    <hr>
             <a class="dropdown-item" href="organiseEvent.php"><i class="fas fa-plus-square"></i> Host Event</a>
@@ -89,6 +111,29 @@
 
   <!-- Now, dealing with the body -->
   <div class="container">
+    <!-- Row for any sort of message -->
+    <div class="row">
+      <div class="col=12">
+        <?php  
+
+          if(isset($_SESSION['organiseSuccessMessage'])){
+            echo "<div class='alert alert-success mt-4'>";
+            echo $_SESSION['organiseSuccessMessage'];
+            echo "</div>";
+            unset($_SESSION['organiseSuccessMessage']);
+          }
+          if(isset($_SESSION['error'])){
+            echo "<div class='alert alert-danger mt-4'>";
+            echo $_SESSION['error'];
+            echo "</div>";
+            unset($_SESSION['error']);
+          }
+
+
+        ?>
+      </div>
+    </div>
+    <!-- Row for oganise form -->
     <div class="row">
       <div class="col-12 mt-4">
         <h4>Organise Events</h4>
@@ -96,7 +141,7 @@
         <center>
           <h6 class='mb-4'>Please fill the form below:</h6>
         </center>
-        <form method = "post">
+        <form method = "post" id="eventRegisterForm" data-parsley-length="[5, 100]">
           <div class="row">
             <div class="form-group col-12 col-md-5 mt-2">
               <label class="h6" for="eventname">Event Name</label>
@@ -117,7 +162,7 @@
             
             <div class="form-group col-12 col-md-5 mt-2">
               <label class="h6" for="venue">Venue</label>
-              <input class="form-control" type="text" id="venue" name="venue" placeholder="Venue here...">
+              <input class="form-control" type="text" id="venue" name="venue" placeholder="Venue here..." data-parsley-length="[5, 100]">
               <small class="form-text text-muted">Enter value as: Room no. 216, MV Block </small>
             </div>
 
@@ -130,7 +175,7 @@
             <div class="form-group col-5 col-md-2 mt-2">
               <label class="h6" for="etime">Time</label>
               <input class="form-control" type="time" id="etime" name="etime" >
-              <small class="form-text text-muted">Enter value as: HH:MM SS</small>
+              <small class="form-text text-muted">Enter value as: HH:MM AM/PM</small>
             </div>
           
             <div class="form-group col-12  col-sm-7 mt-2">
@@ -144,10 +189,10 @@
             </div>
 
             <div class="form-group col-12 col-sm-3 mt-2">
-              <button type="submit" class="btn btn-success btn-block" disabled>Post Event</button>
+              <button type="submit" class="btn btn-success btn-block" name="eventDetails">Post Event</button>
             </div>
             <div class="form-group col-6 col-sm-3 mt-2">
-              <button type="submit" class="btn btn-outline-danger" disabled>Cancel</button>
+              <a class="btn btn-outline-danger" href="dashboard.php">Cancel</a>
             </div>
          
           </div>
@@ -225,10 +270,16 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!--Form validation JS -->
+    <script type="text/javascript" src="./scripts/parsleys.js"></script>
+    
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
             $('.dropdown-toggle').dropdown();
+            $('#eventRegisterForm').parsley();
+            
+
         });
     </script>
 

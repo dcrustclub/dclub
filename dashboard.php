@@ -11,7 +11,6 @@
 		return;
 	}
 	
-
 	//Checking whether the user has completed his/her profile or not
 	
 	$sql_check_full_register = "Select * from fullregister where register_id=:id";
@@ -29,9 +28,6 @@
 		return;	
 	}
 	
-	
-
-
 ?>	
 
 

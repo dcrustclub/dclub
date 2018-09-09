@@ -1,16 +1,13 @@
 <?php  
   session_start();
   
-  
+
   if(isset($_SESSION['name'])){
     header('Location: dashboard.php');
     return;
   }
   
   
-
-
-
 ?>
 
 
@@ -30,6 +27,9 @@
     <!-- Custom style sheet -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/png" href="img/title_image.png">
+    <!-- Using Parsely's CSS -->
+    <link rel="stylesheet" href = "css/parsleys.css">
+
   </head>
   <body>
       
@@ -70,10 +70,10 @@
                 <p class="lead">Please fill out the details here <i class="fas fa-hand-point-down"></i></p>
               </div>
 
-              <form class="mt-3" method="post" action="login.php">
+              <form class="mt-3" method="post" action="login.php" id = "loginForm" data-parsley-validate >
                 <div class="form-group form-inline mt-3">
                   <label for="email" class="h5 col-12 col-sm-3">Email</label>
-                  <input type="email" name="email" class="col-12 col-sm-7 offset-sm-1 form-control" id="email" placeholder="Your email here" required>
+                  <input type="email" name="email" class="col-12 col-sm-7 offset-sm-1 form-control" id="email" placeholder="Your email here" required data-parsley-type="email" data-parsely-trigger="keyup" /> 
                 </div>
                 <div class="form-group form-inline">
                   <label for="pass" class="h5 col-12 col-sm-3">Password</label>
@@ -89,11 +89,8 @@
               </form>
             </div>
           </div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -113,7 +110,7 @@
                 <p class="lead">Please fill out the details here <i class="fas fa-hand-point-down"></i></p>
               </div>
 
-              <form method="post" action="register.php">
+              <form method="post" action="register.php" id="registerForm">
                 <div class="form-group form-inline">
                   <label for="name" class="col-12 col-sm-3">Username</label>
                   <input type="text" id="name" name="name" class="form-control col-10 col-sm-8 offset-1" required>
@@ -254,9 +251,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!--Form validation JS -->
+    <script type="text/javascript" src="./scripts/parsleys.js"></script>
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
+            $('#loginForm').parsley();
+            $('#registerForm').parsley();
 
         });
 
