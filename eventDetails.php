@@ -1,4 +1,6 @@
-<?php  
+<?php
+
+	//Add a delete button to delete events which would be shown only to the user who created it  
 	require_once 'pdo.php';
 	session_start();
 	//Checking that user has visited after logging in

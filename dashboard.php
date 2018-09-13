@@ -4,6 +4,7 @@
 	session_start();
 
 	//Checking that user has visited after logging in
+	//Now, getting the enrollments of user
 	
 	if(!isset($_SESSION['name'])){
 		$_SESSION['error'] = "Please <a href='#' class='alert-link' data-toggle='modal' data-target='#loginModal' data-dismiss='modal'> Login first</a>";
@@ -27,6 +28,15 @@
 		header('Location:fullRegister.php');
 		return;	
 	}
+
+	//Now, getting the user hosted events
+	$sql_get_user_hosted_events = "SELECT * from events where user_register_id=:r_id";
+	$stmt_get_user_hosted_events = $pdo->prepare($sql_get_user_hosted_events);
+	$stmt_get_user_hosted_events->execute(array(
+		':r_id' => $_SESSION['login_register_id']
+
+	));
+	$row_get_user_hosted_events = $stmt_get_user_hosted_events->fetch(PDO::FETCH_ASSOC);
 	
 ?>	
 
@@ -104,11 +114,7 @@
 			          unset($_SESSION['error_dashboard']);
 			        }
 			    ?>
-      
-
-
 			</div>
-
 		</div>
 
 		<div class="row">
@@ -134,7 +140,12 @@
 				<!--Now, a table showing the events user has enrolled -->
 				<div class="row mt-3">
 					<div class="col-12">
+						<?php 
 
+							//Write here the php code to check the user's enrollments
+
+						?>
+			
 						<table class="table text-center table-hover table-responsive-sm">
 							<caption>that's all of your enrollments</caption>
 							<thead class="table-secondary">
@@ -211,6 +222,8 @@
 
 
 					</div>
+					
+
 				</div>
 
 				<div class="row mt-3 mb-3">
@@ -219,7 +232,7 @@
 							<div class="card-body">
 								Want to enroll in more Events?<br>
 								<div class="h5 mt-3">
-									<a class="btn btn-success " href="#" >Click here!</a>
+									<a class="btn btn-success " href="events.php" >Click here!</a>
 								</div>
 							</div>
 						</div>
@@ -227,7 +240,66 @@
 					<div class="col-12">
 						<hr>
 					</div>
+
 				</div>
+
+				<!-- Now, a table showing a events hosted by user -->
+				<div class="row mt-3">
+					<div class="col-12">
+						<?php  
+							if($row_get_user_hosted_events){
+								echo "<h5 class='mb-4'>Your Hostings <i class='fas fa-hand-point-down'></i></h5>";
+								$i = 1;
+								$dt = new DateTime($row_get_user_hosted_events['v_date_time']);
+								$e_date = $dt->format('d-m-y');
+								$e_time = $dt->format('h:i:s');
+
+								echo "<table class='table text-center table-hover table-responsive'>
+									<caption>that is it from your hosted events</caption>";
+								echo "<thead>";
+								echo "<tr>";
+								echo "<th scope='col'>Sno.</th>";
+								echo "<th scope='col'>Event Name</th>";
+								echo "<th scope='col'>Venue</th>";
+								echo "<th scope='col'>Date</th>";
+								echo "<th scope='col'>Time</th>";
+								echo "<th scope='col'>Actions</th>";
+								echo "</tr>";
+								echo "</thead>";
+								echo "<tbody>";
+								echo "<tr scope='row'>";
+								echo "<td>".$i."</td>";
+								echo "<td>".$row_get_user_hosted_events['name']."</td>";
+								echo "<td>".$row_get_user_hosted_events['v_place']."</td>";
+								echo "<td>".$e_date."</td>";
+								echo "<td>".$e_time."</td>";
+								echo "<td><a href='eventDetails.php?e_id=".$row_get_user_hosted_events['event_id']."' class='btn btn-primary' >Details</a></td>";
+								echo "</tr>";
+								while($row_get_user_hosted_events= $stmt_get_user_hosted_events->fetch(PDO::FETCH_ASSOC)){
+									$dt = new DateTime($row_get_user_hosted_events['v_date_time']);
+									$e_date = $dt->format('d-m-y');
+									$e_time = $dt->format('h:i:s');
+									$i++;
+									echo "<tr scope='row'>";
+									echo "<td>".$i."</td>";
+									echo "<td>".$row_get_user_hosted_events['name']."</td>";
+									echo "<td>".$row_get_user_hosted_events['v_place']."</td>";
+									echo "<td>".$e_date."</td>";
+									echo "<td>".$e_time."</td>";
+									echo "<td><a href='eventDetails.php?e_id=".$row_get_user_hosted_events['event_id']."' class='btn btn-primary' >Details</a></td>";
+									echo "</tr>";
+
+								}
+
+								echo "</tbody>";
+								echo "</table>";
+							}
+
+						?>
+
+					</div>
+				</div>
+
 
 			</div>
 

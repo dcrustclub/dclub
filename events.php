@@ -1,6 +1,6 @@
 <?php  
 	//To do's
-	//Add jquery code so that the report field will be updated automatically when the user reports
+	//Add jquery code so that the report field will be updated automatically when the user reports and details of user who reports should also be save
 	//Add jquery code so that user gets enrolled when they click enroll button
 
 
